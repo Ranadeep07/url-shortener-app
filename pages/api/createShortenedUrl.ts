@@ -19,25 +19,55 @@ export default function handler(
     const uniqueId = nanoid(6);
     console.log(uniqueId);
     const org = getSFOrgInstance();
-    authenticateOrgAndCreateRecord(org, uniqueId, req?.body?.url);
-
-    return res.status(200).send({ uniqueId });
+    authenticateOrgAndCreateRecord(org, uniqueId, req?.body?.url, res);
   }
 }
 
-const authenticateOrgAndCreateRecord = (connectionInstance: any, uniqueId: string, redirUrl: string) => {
+//Handler method for authenicating with the org and create record
+const authenticateOrgAndCreateRecord = (
+  connectionInstance: any,
+  uniqueId: string,
+  redirUrl: string,
+  res: NextApiResponse<Data>
+) => {
+  const urlExistenceCheckQuery = `SELECT id,name,Unique_Id__c,Redirection_URL__c FROM URL__c WHERE Redirection_URL__c='${redirUrl}' LIMIT 1`;
   // single-user mode
   connectionInstance.authenticate(
     { username: process.env.SF_UN, password: process.env.SF_PASS },
-    (err: any, resp: any) => {
-      // the oauth object was stored in the connection object
-      if (!err) { 
-        insertRecord(initializeUrlObj(uniqueId, redirUrl), connectionInstance);
+    async (err: any, resp: any) => {
+      // If the shortened url already exists then only returning the unique id else inserting new record
+      if (!err) {
+        await connectionInstance.query(
+          { query: urlExistenceCheckQuery },
+          (err: any, resp: any) => {
+            console.log("Check1", resp);
+            //   if (!err && resp?.records?.length === 0) {
+            //     console.log("Check2");
+            //     insertRecord(
+            //       initializeUrlObj(uniqueId, redirUrl),
+            //       connectionInstance
+            //     );
+            //     return res.status(200).send({ uniqueId });
+            //   } else {
+            //     console.log('Checkelse')
+            //     return res
+            //       .status(200)
+            //       .send({ uniqueId: '1234' });
+            //   }
+            // }
+            insertRecord(
+              initializeUrlObj(uniqueId, redirUrl),
+              connectionInstance
+            );
+            return res.status(200).send({ uniqueId });
+          }
+        );
       }
     }
   );
 };
 
+//Handler method for initializing the URL Instance
 const initializeUrlObj = (uniqueId: string, redirUrl: string) => {
   const urlObj = initializeSObject("URL__c");
   urlObj?.set("Unique_Id__c", uniqueId);

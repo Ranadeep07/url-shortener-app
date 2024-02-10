@@ -15,7 +15,6 @@ export default async function handler(
   const query = `SELECT id,name,Unique_Id__c,Redirection_URL__c FROM URL__c WHERE Unique_Id__c='${urlParam.uid}' LIMIT 1`;
   const org = getSFOrgInstance();
   authenticateOrgAndQuery(org, query, res)!;
-  // res.status(200).send('Redirected');
 }
 
 const authenticateOrgAndQuery = (

@@ -1,4 +1,4 @@
-import nforce from "nforce";
+const nforce = require('nforce');
 
 export const getSFOrgInstance = () => {
   return nforce.createConnection({
