@@ -18,7 +18,7 @@ const UrlShortener = () => {
     console.log("Submitted");
     await axios.post("/api/createShortenedUrl", data).then((res) => {
       reset({
-        url: constants.LOCAL_DOMAIN + "/api/redirectToUrl/" + res.data.uniqueId,
+        url: constants.PRODUCTION_DOMAIN + "/api/redirectToUrl/" + res.data.uniqueId,
       });
     });
   };
