@@ -10,7 +10,7 @@ export default function Home() {
       className={`flex min-h-screen flex-col items-center justify-between p-24 ${poppins.className}`}
     >
       <UrlShortener />
-      <footer>&copy; All Rights Reserved 2024.</footer>
+      <footer className="absolute bottom-10">&copy; All Rights Reserved 2024.</footer>
     </main>
   );
 }

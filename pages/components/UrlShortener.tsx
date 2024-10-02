@@ -10,7 +10,8 @@ interface UrlFormValidator {
 
 const UrlShortener = () => {
   const [tabIndex, setTabIndex] = useState(1);
-  const [url, setUrl] = useState(null);
+  const [url, setUrl] = useState(String || null);
+  const [copyBtnText, setCopyBtnText] = useState("Copy URL");
   const { register, handleSubmit, reset } = useForm<UrlFormValidator>();
   const onUrlShortenerSubmit: SubmitHandler<UrlFormValidator> = async (
     data
@@ -18,16 +19,42 @@ const UrlShortener = () => {
     console.log("Submitted");
     await axios.post("/api/createShortenedUrl", data).then((res) => {
       console.log(res);
-      if(res) {
+      if (res) {
         reset({
-          url: constants.PRODUCTION_DOMAIN + "/api/redirectToUrl/" + res.data.uniqueId,
+          url:
+            constants.PRODUCTION_DOMAIN +
+            "/api/redirectToUrl/" +
+            res.data.uniqueId,
         });
+        setUrl(
+          constants.PRODUCTION_DOMAIN +
+            "/api/redirectToUrl/" +
+            res.data.uniqueId
+        );
       }
     });
   };
 
   const onQrGeneratorSubmit = async (data: any) => {
     setUrl(data.url);
+  };
+
+  const handleCopy = () => {
+    console.log(url);
+    if (url) {
+      navigator.clipboard
+        .writeText(url)
+        .then(() => {
+          console.log("Copied");
+          setCopyBtnText("Copied");
+          setTimeout(() => {
+            setCopyBtnText("Copy URL");
+          }, 2000);
+        })
+        .catch((err) => {
+          console.error("Failed to copy: ", err);
+        });
+    }
   };
 
   return (
@@ -68,6 +95,14 @@ const UrlShortener = () => {
                 Shorten URL
               </button>
             </form>
+            <div className="mt-6 flex justify-center items-center">
+              <button
+                className="text-purple-700 hover:text-white border border-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm p-2 text-center me-2 dark:border-purple-400 dark:text-purple-400 dark:hover:text-white dark:hover:bg-purple-500 dark:focus:ring-purple-900"
+                onClick={handleCopy}
+              >
+                {copyBtnText}
+              </button>
+            </div>
           </>
         ) : (
           <div className="flex flex-col justify-center gap-6">
