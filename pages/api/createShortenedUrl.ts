@@ -41,20 +41,6 @@ const authenticateOrgAndCreateRecord = (
           { query: urlExistenceCheckQuery },
           (err: any, resp: any) => {
             console.log("Check1", resp);
-            //   if (!err && resp?.records?.length === 0) {
-            //     console.log("Check2");
-            //     insertRecord(
-            //       initializeUrlObj(uniqueId, redirUrl),
-            //       connectionInstance
-            //     );
-            //     return res.status(200).send({ uniqueId });
-            //   } else {
-            //     console.log('Checkelse')
-            //     return res
-            //       .status(200)
-            //       .send({ uniqueId: '1234' });
-            //   }
-            // }
             insertRecord(
               initializeUrlObj(uniqueId, redirUrl),
               connectionInstance
